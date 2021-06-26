@@ -9,7 +9,6 @@ import numpy as np
 import os
 from PIL import Image, FontFile, ImageFont, ImageDraw
 
-
 class RenderText2Image:
     
     ##Defines
@@ -22,8 +21,8 @@ class RenderText2Image:
     _img = None
     _font = None
     _draw = None
-    
-    def __init__(self, text, bgColor='#FFFFFF', fontColor='#000000', outputFileName="this"):
+
+    def __init__(self, text, bgColor='#000000', fontColor='#FFFFFF', outputFileName="this"):
         ##Set global vars
         self._text, self._bgcolor, self._fontColor = text, bgColor, fontColor
         self._outputFileName = outputFileName
@@ -31,16 +30,15 @@ class RenderText2Image:
         
     def makeBackground(self):
         try:
-            self._img = Image.new("RGB", (800, 800), self._bgcolor)
+            self._img = Image.new("RGB", (1000, 500), self._bgcolor)
             self._draw = ImageDraw.Draw(self._img)
             self.setFontSize()
         except Exception:
             self._error, self._errmsg = 0, "Background could not be rendered ERR_MSG:"
     
     def setFontSize(self):
-        print("set font size")
         fontsize = 1
-        img_fraction = 1.7
+        img_fraction = 1
         try:
             self._font = ImageFont.truetype(self.FULL_PATH_TO_FONT, fontsize)
             while self._font.getsize(self._text)[0] < img_fraction * self._img.size[0]:
@@ -53,7 +51,7 @@ class RenderText2Image:
     
     def parseText(self):
         import textwrap
-        lines = textwrap.wrap(self._text, 50)
+        lines = textwrap.wrap(self._text, 40)
         return lines
     
     def addText2Image(self):
@@ -62,10 +60,10 @@ class RenderText2Image:
             count = 0
             for line in lines:
                 width, height = self._font.getsize(line)
-                self._draw.text((0,(count*height)+2), line, fill=self._fontColor, font=self._font)
+                self._draw.text((width*0.3,(count*height)+170), line, fill=self._fontColor, font=self._font)
                 count += 1
             self._img.save(self._outputFileName, "PNG")
-            print("Image saved as: ", self._outputFileName+".png")
+            print("Image saved as: ", self._outputFileName)
         except Exception:
             print("Exception while addind text ot image")
             
@@ -77,7 +75,6 @@ class ImageToVideo:
         self.output = output
 
     def generate_frames(self, filename, sec, exception=False):
-        frame_array = []
         if filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png") or exception:
             img = cv2.imread(filename)
             height, width, layers = img.shape
@@ -85,41 +82,41 @@ class ImageToVideo:
         else:
             print("[Task failed]***Input valid image***")
             return
-        print("Appending images")
-        i = 1
-        for filename in range(int(sec)):
-            frame_array.append(img)
-            print("Appended ", i, "times")
-            i += 1
-        print("Total Frames: ", len(frame_array))
-        fps=0.1
+        fps=100
         print("Framerate set as ", fps," frame/sec.")
 
         out = cv2.VideoWriter(self.output,cv2.VideoWriter_fourcc(*'DIVX'), fps, size)
         
         print("Creating video stream")
-        for i in range(len(frame_array)):
-            out.write(frame_array[i])
-            out.release()
+        for i in range(int(sec*fps)):
+            out.write(img)
+        out.release()
         print("Video released as ", self.output)
+        return self.output
 
 
-# Define Argument Parser for the script
-ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--input", required=True)
-ap.add_argument("-o", "--output", required=True)
-ap.add_argument("-t", "--time", required=True)
+# # Define Argument Parser for the script
+# ap = argparse.ArgumentParser()
+# ap.add_argument("-i", "--input", required=True)
+# ap.add_argument("-o", "--output", required=True)
+# ap.add_argument("-t", "--time", required=True)
 
-args = vars(ap.parse_args())
+# args = vars(ap.parse_args())
 
-# Set user parameters
-videoId = args["input"]
-output = args["output"]
-time = args["time"]
+# # Set user parameters
+# videoId = args["input"]
+# output = args["output"]
+# time = args["time"]
 
-# Create ImageToVideo Class object
-image_to_video = ImageToVideo(output)
-image_to_video.generate_frames(
-    RenderText2Image(
-        "This video has it's video url of: https://www.youtube.com/watch?v="+videoId
-        ).getImage(), time, exception=True)
+if __name__ == "__main__":
+    # Create ImageToVideo Class object
+    print("Preparing video")
+    videoId = "12123"
+    output="temp.mkv"
+    time = 10
+    image = RenderText2Image("This video's url is https://www.youtube.com/watch?v="+videoId, outputFileName="img").getImage()
+    videoFile = ImageToVideo(output).generate_frames(image, time, exception=True)
+
+    print("Uploading video...")
+    import os
+    os.system(f"python3 /home/needle/githubClones/youtubeThingy/upload_video.py --file {videoFile} --title test")
