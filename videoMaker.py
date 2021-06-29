@@ -1,8 +1,3 @@
-'''
-Usage       :   python imagetovideo.py -i /home/administrator/Documents/dl/images 
-                            -o /home/administrator/Documents/dl/images/video.avi 
-                            -f 20                
-'''
 import argparse
 import cv2
 import numpy as np
@@ -30,7 +25,7 @@ class RenderText2Image:
         
     def makeBackground(self):
         try:
-            self._img = Image.new("RGB", (1000, 500), self._bgcolor)
+            self._img = Image.new("RGB", (1200, 800), self._bgcolor)
             self._draw = ImageDraw.Draw(self._img)
             self.setFontSize()
         except Exception:
@@ -93,30 +88,3 @@ class ImageToVideo:
         out.release()
         print("Video released as ", self.output)
         return self.output
-
-
-# # Define Argument Parser for the script
-# ap = argparse.ArgumentParser()
-# ap.add_argument("-i", "--input", required=True)
-# ap.add_argument("-o", "--output", required=True)
-# ap.add_argument("-t", "--time", required=True)
-
-# args = vars(ap.parse_args())
-
-# # Set user parameters
-# videoId = args["input"]
-# output = args["output"]
-# time = args["time"]
-
-if __name__ == "__main__":
-    # Create ImageToVideo Class object
-    print("Preparing video")
-    videoId = "12123"
-    output="temp.mkv"
-    time = 10
-    image = RenderText2Image("This video's url is https://www.youtube.com/watch?v="+videoId, outputFileName="img").getImage()
-    videoFile = ImageToVideo(output).generate_frames(image, time, exception=True)
-
-    print("Uploading video...")
-    import os
-    os.system(f"python3 /home/needle/githubClones/youtubeThingy/upload_video.py --file {videoFile} --title test")
