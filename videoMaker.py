@@ -16,6 +16,7 @@ class RenderText2Image:
     _img = None
     _font = None
     _draw = None
+    _imgSize = (1200,800)
 
     def __init__(self, text, bgColor='#000000', fontColor='#FFFFFF', outputFileName="this"):
         ##Set global vars
@@ -25,7 +26,7 @@ class RenderText2Image:
         
     def makeBackground(self):
         try:
-            self._img = Image.new("RGB", (1200, 800), self._bgcolor)
+            self._img = Image.new("RGB", self._imgSize, self._bgcolor)
             self._draw = ImageDraw.Draw(self._img)
             self.setFontSize()
         except Exception:
@@ -46,21 +47,18 @@ class RenderText2Image:
     
     def parseText(self):
         import textwrap
-        lines = textwrap.wrap(self._text, 40)
+        lines = textwrap.wrap(self._text, 60)
         return lines
     
     def addText2Image(self):
         lines = self.parseText()
         try:
             count = 0
-            for line in lines:
-                width, height = self._font.getsize(line)
-                self._draw.text((width*0.3,(count*height)+170), line, fill=self._fontColor, font=self._font)
-                count += 1
+            self._draw.text((self._imgSize[0]*0.45-self._font.getsize(lines[0])[0],self._imgSize[1]*0.4), self._text, fill=self._fontColor, font=self._font, align="center")
             self._img.save(self._outputFileName, "PNG")
             print("Image saved as: ", self._outputFileName)
         except Exception:
-            print("Exception while addind text ot image")
+            print("Exception while adding text ot image")
             
     def getImage(self):
         return self._outputFileName if self._error else self._error
@@ -77,10 +75,10 @@ class ImageToVideo:
         else:
             print("[Task failed]***Input valid image***")
             return
-        fps=100
+        fps=1
         print("Framerate set as ", fps," frame/sec.")
 
-        out = cv2.VideoWriter(self.output,cv2.VideoWriter_fourcc(*'DIVX'), fps, size)
+        out = cv2.VideoWriter(self.output,0, fps, size)
         
         print("Creating video stream")
         for i in range(int(sec*fps)):
