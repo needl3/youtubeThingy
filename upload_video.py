@@ -138,7 +138,7 @@ def resumable_upload(request):
       status, response = request.next_chunk()
       if response is not None:
         if 'id' in response:
-          print('[+]  Video id "%s" was successfully uploaded.' % response['id'])
+          print('[+]  Video successfully uploaded.\nVideo URL: https://www.youtube.com/watch?v="%s"' % response['id'])
         else:
           exit('[-] The upload failed with an unexpected response: %s' % response)
       else:
