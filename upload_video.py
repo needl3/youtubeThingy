@@ -169,7 +169,7 @@ if __name__ == '__main__':
   parser.add_argument('--privacy', default="private",help="Video accessibility")
   parser.add_argument('--credDir', required=True, help="Directory containing client_secrets.json")
   parser.add_argument('--time',default=10,help="Video length")
-  parser.add_argument('--message',default="You are watching\nhttps:/www./youtube.com/watch?v=",help="Text you want to upload as video")
+  parser.add_argument('--message',default="You are watching\nhttps://www.youtube.com/watch?v=",help="Text you want to upload as video")
   args = parser.parse_args()
 
 
