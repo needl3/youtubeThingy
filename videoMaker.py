@@ -18,7 +18,7 @@ class RenderText2Image:
     _draw = None
     _imgSize = (1200,800)
 
-    def __init__(self, text, bgColor='#000000', fontColor='#FFFFFF', outputFileName="this"):
+    def __init__(self, text=None, bgColor='#000000', fontColor='#FFFFFF', outputFileName="this"):
         ##Set global vars
         self._text, self._bgcolor, self._fontColor = text, bgColor, fontColor
         self._outputFileName = outputFileName
@@ -28,6 +28,10 @@ class RenderText2Image:
         try:
             self._img = Image.new("RGB", self._imgSize, self._bgcolor)
             self._draw = ImageDraw.Draw(self._img)
+            if not self._text:
+                self._img.save(self._outputFileName, "PNG")
+                print("Blank frame created as ",self._outputFileName)
+                return
             self.setFontSize()
         except Exception:
             self._error, self._errmsg = 0, "Background could not be rendered ERR_MSG:"
@@ -54,7 +58,7 @@ class RenderText2Image:
         lines = self.parseText()
         try:
             count = 0
-            self._draw.text((self._imgSize[0]*0.45-self._font.getsize(lines[0])[0],self._imgSize[1]*0.4), self._text, fill=self._fontColor, font=self._font, align="center")
+            self._draw.text((self._imgSize[0]*0.1,self._imgSize[1]*0.4), self._text, fill=self._fontColor, font=self._font, align="center")
             self._img.save(self._outputFileName, "PNG")
             print("Image saved as: ", self._outputFileName)
         except Exception:
